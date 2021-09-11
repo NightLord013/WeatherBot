@@ -1,7 +1,7 @@
-import asyncio
 import logging
 import aiohttp
 import os
+import json
 
 from aiogram import Bot, Dispatcher, executor, types
 
@@ -14,6 +14,7 @@ async def current_weather():
     async with aiohttp.ClientSession() as session:
         async with session.get('http://api.openweathermap.org/data/2.5/weather?q=Sarmanovo&appid=82ce53fc45d23c243b0e1fc794f64432') as resp:
             response = await resp.read()
+            response = json.loads(response)
             return response
 
 @dp.message_handler(commands=['start'])
@@ -32,7 +33,7 @@ async def help_cmd(msg: types.Message):
 @dp.callback_query_handler(text='cur_weather')
 async def weather_cmd(msg: types.Message):
     weather = await current_weather()
-    await bot.send_message(718160444, text=weather.decode("utf-8"))
+    await bot.send_message(718160444, text=weather["weather"][0]['main'])
 
 
 if __name__ == '__main__':
